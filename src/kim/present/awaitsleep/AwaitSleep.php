@@ -28,6 +28,7 @@ namespace kim\present\awaitsleep;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\ClosureTask;
+use pocketmine\scheduler\TaskScheduler;
 use SOFe\AwaitGenerator\Await;
 
 /** Task based fake sleep for a given number of ticks */
@@ -40,35 +41,35 @@ function asleep(int $ticks) : \Generator{
 }
 
 final class AwaitSleep{
-    private static ?Plugin $plugin = null;
+    private static ?TaskScheduler $scheduler = null;
 
-    /** Register await-sleep plugin */
+    /** Register await-sleep scheduler from plugin */
     public static function register(Plugin $plugin) : void{
-        self::$plugin = $plugin;
+        self::$scheduler = $plugin->getScheduler();
     }
 
-    /** Unregister await-sleep plugin */
+    /** Unregister await-sleep scheduler */
     public static function unregister() : void{
-        self::$plugin = null;
+        self::$scheduler = null;
     }
 
     /**
-     * Check if await-sleep is registered
+     * Check if await-sleep scheduler is registered
      *
-     * @return bool is await-sleep registered
+     * @return bool is await-sleep scheduler registered
      */
     public static function isRegistered() : bool{
-        return self::$plugin !== null;
+        return self::$scheduler !== null;
     }
 
     /** Task based fake sleep for a given number of ticks */
     public static function sleep(int $ticks) : \Generator{
-        if(self::$plugin === null){
+        if(self::$scheduler === null){
             throw new \RuntimeException("await-sleep is not registered");
         }
 
-        yield from Await::promise(static function($resolve) use ($ticks) : void{
-            self::$plugin->getScheduler()->scheduleDelayedTask(new ClosureTask(fn() => $resolve(null)), $ticks);
-        });
+        yield from Await::promise(
+            static fn($resolve) => self::$scheduler->scheduleDelayedTask(new ClosureTask($resolve), $ticks)
+        );
     }
 }
