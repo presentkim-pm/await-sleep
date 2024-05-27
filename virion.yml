@@ -1,7 +1,7 @@
 ---
 name: await-sleep
 antigen: kim\present\awaitsleep
-version: 0.0.1
+version: 1.0.0
 api: [ 5.0.0 ]
 author: PresentKim
 description: "Provides a fake asleep() function for await-generator!"
