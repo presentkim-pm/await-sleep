@@ -33,10 +33,6 @@ use SOFe\AwaitGenerator\Await;
 
 /** Task based fake sleep for a given number of ticks */
 function asleep(int $ticks) : \Generator{
-    if(!AwaitSleep::isRegistered()){
-        throw new \RuntimeException("await-sleep is not registered");
-    }
-
     yield from AwaitSleep::sleep($ticks);
 }
 
