@@ -43,7 +43,68 @@ See [Official Poggit Virion Documentation](https://github.com/poggit/support/blo
 
 ## How to use?
 
-TODO: Write usage
+First. register the plugin to virion for using task handler.
+
+```php
+use kim\present\awaitsleep\AwaitSleep;
+use pocketmine\plugin\PluginBase;
+
+class TestPlugin extends PluginBase {
+    public function onLoad() : void{
+        AwaitSleep::register($this);
+    }
+}
+```
+
+Second. use `AwaitSleep::sleep(int $ticks)`!
+
+```php
+use kim\present\awaitsleep\AwaitSleep;
+use pocketmine\plugin\PluginBase;
+use SOFe\AwaitGenerator\Await;
+
+class TestPlugin extends PluginBase {
+    public function onLoad() : void{
+        AwaitSleep::register($this);
+    }
+    
+    public function onEnable() : void{
+        Await::g2c($this->test());
+    }
+    
+    public function test() : \Generator{
+        $this->getLogger()->info("Start");
+        yield from AwaitSleep::sleep(20);
+        $this->getLogger()->info("End");
+    }
+}
+```
+
+Third. use `asleep(int $ticks)` instead of `Await::sleep(int $ticks)`!
+
+```php
+use kim\present\awaitsleep\AwaitSleep;
+use pocketmine\plugin\PluginBase;
+use SOFe\AwaitGenerator\Await;
+
+use function kim\present\awaitsleep\asleep;
+
+class TestPlugin extends PluginBase {
+    public function onLoad() : void{
+        AwaitSleep::register($this);
+    }
+    
+    public function onEnable() : void{
+        Await::g2c($this->test());
+    }
+    
+    public function test() : \Generator{
+        $this->getLogger()->info("Start");
+        yield from asleep(20);
+        $this->getLogger()->info("End");
+    }
+}
+```
 
 -----
 
