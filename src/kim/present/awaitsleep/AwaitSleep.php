@@ -26,12 +26,49 @@ declare(strict_types=1);
 
 namespace kim\present\awaitsleep;
 
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\plugin\Plugin;
+use pocketmine\scheduler\ClosureTask;
 use SOFe\AwaitGenerator\Await;
 
+/** Task based fake sleep for a given number of ticks */
+function asleep(int $ticks) : \Generator{
+    if(!AwaitSleep::isRegistered()){
+        throw new \RuntimeException("await-sleep is not registered");
+    }
+
+    yield from AwaitSleep::sleep($ticks);
+}
+
 final class AwaitSleep{
+    private static ?Plugin $plugin = null;
+
+    /** Register await-sleep plugin */
+    public static function register(Plugin $plugin) : void{
+        self::$plugin = $plugin;
+    }
+
+    /** Unregister await-sleep plugin */
+    public static function unregister() : void{
+        self::$plugin = null;
+    }
+
+    /**
+     * Check if await-sleep is registered
+     *
+     * @return bool is await-sleep registered
+     */
+    public static function isRegistered() : bool{
+        return self::$plugin !== null;
+    }
+
+    /** Task based fake sleep for a given number of ticks */
+    public static function sleep(int $ticks) : \Generator{
+        if(self::$plugin === null){
+            throw new \RuntimeException("await-sleep is not registered");
+        }
+
+        yield from Await::promise(static function($resolve) use ($ticks) : void{
+            self::$plugin->getScheduler()->scheduleDelayedTask(new ClosureTask(fn() => $resolve(null)), $ticks);
+        });
+    }
 }
