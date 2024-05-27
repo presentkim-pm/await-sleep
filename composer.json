@@ -1,0 +1,22 @@
+{
+  "name": "presentkim/await-sleep",
+  "description": "Provides a fake asleep() function for await-generator for PocketMine-MP",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "pocketmine/pocketmine-mp": "^5.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "kim\\present\\awaitsleep\\": [
+        "src/kim/present/awaitsleep"
+      ]
+    }
+  },
+  "extra": {
+    "virion": {
+      "spec": "3.0",
+      "namespace-root": "kim\\present\\awaitsleep"
+    }
+  }
+}
